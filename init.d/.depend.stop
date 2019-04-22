@@ -1,0 +1,14 @@
+TARGETS = lvm2-lvmpolld lvm2-lvmetad unattended-upgrades lxd open-vm-tools lxcfs uuidd postgresql mdadm resolvconf atd ufw ntp nginx sshguard plymouth urandom open-iscsi iscsid sendsigs rsyslog umountnfs.sh hwclock.sh networking umountfs cryptdisks cryptdisks-early umountroot mdadm-waitidle halt reboot
+iscsid: open-iscsi
+sendsigs: postgresql plymouth mdadm sshguard atd unattended-upgrades lxd open-vm-tools lxcfs iscsid open-iscsi uuidd nginx
+rsyslog: postgresql mdadm sshguard atd sendsigs ntp nginx
+umountnfs.sh: postgresql plymouth sshguard sendsigs atd unattended-upgrades lxd open-vm-tools rsyslog lxcfs uuidd nginx
+hwclock.sh: postgresql atd rsyslog uuidd
+networking: postgresql umountnfs.sh sshguard iscsid open-iscsi nginx
+umountfs: postgresql lvm2-lvmpolld plymouth hwclock.sh umountnfs.sh mdadm sshguard resolvconf lvm2-lvmetad atd urandom unattended-upgrades lxd open-vm-tools networking lxcfs iscsid open-iscsi uuidd nginx
+cryptdisks: umountfs
+cryptdisks-early: cryptdisks umountfs
+umountroot: umountfs cryptdisks cryptdisks-early
+mdadm-waitidle: umountroot
+halt: mdadm-waitidle umountroot
+reboot: mdadm-waitidle umountroot
